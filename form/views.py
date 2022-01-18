@@ -12,14 +12,10 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 
 class LeadView(APIView):
-    '''
-    View class to either view all unclaimed leads or to create a new lead.
-    '''
+    
 
     def get(self, request):
-        '''
-        GET all unclaimed leads.
-        '''
+        
         queryset = Lead.objects.filter(
             Q(claimed=None)
             or Q(claimed="")
@@ -32,9 +28,7 @@ class LeadView(APIView):
         )
 
     def post(self, request):
-        '''
-        POST/create a new questionare/lead.
-        '''
+        
         try:
             data = LeadSerializer(data=request.data)
         except Exception as err:
@@ -61,16 +55,12 @@ class LeadView(APIView):
 
 
 class AgentView(APIView):
-    '''
-    View class to assign a lead/questionare to an agent/employee.
-    '''
+    
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request, id):
-        '''
-        GET a single unclaimed lead or a lead claimed by the requesting user.
-        '''
+        
         agent = Agent.objects.filter(user=request.user).first()
         try:
             lead = Lead.objects.filter(
@@ -96,7 +86,7 @@ class AgentView(APIView):
         except Lead.DoesNotExist:
             return Response(
                 {
-                    "error": "This lead does not exist."
+                    "error": "The lead does not exist."
                 },
                 status=status.HTTP_204_NO_CONTENT
             )
@@ -112,14 +102,14 @@ class AgentView(APIView):
         elif lead.claimed != agent:
             return Response(
                 {
-                    "error": "Lead already claimed."
+                    "error": "Lead claimed."
                 },
                 status=status.HTTP_306_RESERVED
             )
         elif lead.claimed == agent:
             return Response(
                 {
-                    "error": "You have already claimed this."
+                    "error": "This has been claimed already."
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
